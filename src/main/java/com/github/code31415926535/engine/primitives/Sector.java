@@ -7,6 +7,10 @@ import java.util.List;
 
 @AllArgsConstructor
 public class Sector {
+    // primarily for debugging
+    @Getter
+    private String name;
+
     @Getter
     private double floor;
     @Getter
@@ -40,5 +44,15 @@ public class Sector {
 
     public double getHeight() {
         return ceil - floor;
+    }
+
+    public String toString() {
+        StringBuilder res = new StringBuilder("{");
+
+        for (Segment segment: segments) {
+            res.append(" ").append(segment).append(" ");
+        }
+
+        return res + "}";
     }
 }

@@ -53,7 +53,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 
         try {
             // TODO: params here
-            engine = new Engine("infinite_stairs.txt", width, height);
+            engine = new Engine("corridor.txt", width, height);
         } catch (Exception e) {
             e.printStackTrace();
         }

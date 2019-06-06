@@ -14,6 +14,8 @@ public class PointOfView {
     @Getter
     private final double fieldOfView = Math.toRadians(60);
 
+    private final double VIEW_CHANGE = Math.toRadians(5);
+
     public PointOfView(Vertex point, double angleOfView, Sector sector) {
         this.point = point;
         this.angleOfView = angleOfView;
@@ -31,10 +33,10 @@ public class PointOfView {
                 newPov = point.moveByDistanceAndAngle(-1, angleOfView);
                 break;
             case ROTATE_LEFT:
-                angleOfView -= 0.1;
+                angleOfView -= VIEW_CHANGE;
                 return;
             case ROTATE_RIGHT:
-                angleOfView += 0.1;
+                angleOfView += VIEW_CHANGE;
                 return;
         }
 

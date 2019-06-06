@@ -32,10 +32,6 @@ public class Vertex {
         return Math.atan2(y - v.y, x - v.x);
     }
 
-    public double calculateAngle(Vertex a, Vertex b) {
-        return Math.atan2(a.y - y, a.x - x) - Math.atan2(b.y - y, b.x - x);
-    }
-
     public boolean equals(Object o) {
         if (o == this) {
             return true;
@@ -64,5 +60,9 @@ public class Vertex {
 
     public int getRoundedY() {
         return (int) Math.round(y);
+    }
+
+    public String toString() {
+        return String.format("(%1.3f,%1.3f)", x, y);
     }
 }

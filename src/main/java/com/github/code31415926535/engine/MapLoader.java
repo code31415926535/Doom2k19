@@ -97,7 +97,7 @@ public class MapLoader {
         segments.add(new Segment(end, start));
 
         String name = getSectorName(split);
-        Sector sector = new Sector(floor, ceil, segments);
+        Sector sector = new Sector(name, floor, ceil, segments);
         sectors.put(name, sector);
     }
 

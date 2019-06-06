@@ -26,7 +26,6 @@ public class Engine {
         this.fpsMeter = new FpsMeter();
     }
 
-    // Make movement continuous
     public void keyPressed(int keyCode) {
         Action action = Action.fromKeyCode(keyCode);
 

@@ -2,11 +2,16 @@ package com.github.code31415926535.engine;
 
 import com.github.code31415926535.engine.primitives.GeomUtils;
 import com.github.code31415926535.engine.primitives.Sector;
+import com.github.code31415926535.engine.primitives.SectorRenderDetails;
 import com.github.code31415926535.engine.primitives.Segment;
 import com.github.code31415926535.engine.primitives.Vertex;
 
 import java.awt.*;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Queue;
 
 public class Map3D extends Map {
     public Map3D(Map map) {
@@ -23,11 +28,31 @@ public class Map3D extends Map {
         int[] bottom = new int[w];
         Arrays.fill(bottom, h-1);
 
-        drawSector(g2d, w, h, fieldStart, fieldEnd, pointOfView.getCurrentSector(), top, bottom);
+        SectorRenderDetails sectorRenderDetails = new SectorRenderDetails(pointOfView.getCurrentSector(), null, 0, w-1);
+        drawSectors(g2d, w, h, fieldStart, fieldEnd, sectorRenderDetails, top, bottom);
     }
 
-    private void drawSector(Graphics2D g2d, int w, int h, Vertex fieldStart, Vertex fieldEnd,
-                            Sector sector, int[] top, int[] bottom) {
+    private void drawSectors(Graphics2D g2d, int w, int h, Vertex fieldStart, Vertex fieldEnd,
+                            SectorRenderDetails start, int[] top, int[] bottom) {
+        HashSet<String> renderedSectors = new HashSet<>();
+
+        Queue<SectorRenderDetails> sectorsToRender = new ArrayDeque<>();
+        sectorsToRender.add(start);
+
+        while (!sectorsToRender.isEmpty()) {
+            SectorRenderDetails sectorRenderDetails = sectorsToRender.remove();
+            renderedSectors.add(sectorRenderDetails.getSector().getName());
+            ArrayList<SectorRenderDetails> neighbours = drawSector(g2d, w, h, fieldStart, fieldEnd, sectorRenderDetails, top, bottom);
+            for (SectorRenderDetails srd: neighbours) {
+                if (!renderedSectors.contains(srd.getSector().getName())) {
+                    sectorsToRender.add(srd);
+                }
+            }
+        }
+    }
+
+    private ArrayList<SectorRenderDetails> drawSector(Graphics2D g2d, int w, int h, Vertex fieldStart, Vertex fieldEnd,
+                            SectorRenderDetails sectorRenderDetails, int[] top, int[] bottom) {
         // One step in angles a.k.a radius of 1 screen pixel
         double angleStep = pointOfView.getFieldOfView() / w;
         double distanceToProjectionPlane = (w / 2.0) / Math.tan(pointOfView.getFieldOfView() / 2);
@@ -36,9 +61,22 @@ public class Map3D extends Map {
         double fieldEndSlope = fieldEnd.slopeWith(pointOfView.getPoint());
         double diff = GeomUtils.normalizeAngle(fieldEndSlope - fieldStartSlope);
 
+        Sector sector = sectorRenderDetails.getSector();
+        Sector parent = sectorRenderDetails.getParent();
+        int minX = sectorRenderDetails.getXStart();
+        int maxX = sectorRenderDetails.getXEnd();
+
+        ArrayList<SectorRenderDetails>  neighbours = new ArrayList<>();
+
         for (Segment segment : sector.getSegments()) {
-            Segment fieldOfViewIntersection = segment.getFieldOfViewIntersection(pointOfView.getPoint(), fieldStart, fieldEnd);
             Sector neighbour = segment.getNeighbour();
+            // Skip for sector that connects to parent
+            if (neighbour != null && neighbour == parent) {
+                continue;
+            }
+
+            // Calculate intersection with field of view
+            Segment fieldOfViewIntersection = segment.getFieldOfViewIntersection(pointOfView.getPoint(), fieldStart, fieldEnd);
             if (fieldOfViewIntersection != null) {
                 Vertex s = fieldOfViewIntersection.getA();
                 Vertex e = fieldOfViewIntersection.getB();
@@ -62,18 +100,11 @@ public class Map3D extends Map {
                 int xEnd = (int) Math.round(segEnd / angleStep);
 
                 // Bound xStart and xEnd
-                if (xStart < 0) {
-                    xStart = 0;
-                }
-                if (xStart > w-1) {
-                    xStart = w-1;
-                }
+                xStart = GeomUtils.clamp(xStart, minX, maxX);
+                xEnd = GeomUtils.clamp(xEnd, minX, maxX);
 
-                if (xEnd < 0) {
-                    xEnd = 0;
-                }
-                if (xEnd > w - 1) {
-                    xEnd = w-1;
+                if (xEnd - xStart > 0 && neighbour != null) {
+                    neighbours.add(new SectorRenderDetails(neighbour, sector, xStart, xEnd));
                 }
 
                 for (int x = xStart; x != xEnd; x++) {
@@ -91,6 +122,8 @@ public class Map3D extends Map {
                 }
             }
         }
+
+        return neighbours;
     }
 
     private void drawSlice(Graphics2D g2d, int x, int h, double height, Sector sector, Sector neighbour, int[] top, int[] bottom) {

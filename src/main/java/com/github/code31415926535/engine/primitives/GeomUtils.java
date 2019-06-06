@@ -40,4 +40,14 @@ public final class GeomUtils {
     public static double sign(Vertex v1, Vertex v2, Vertex v3) {
         return (v1.getX() - v3.getX()) * (v2.getY() - v3.getY()) - (v2.getX() - v3.getX()) * (v1.getY()-v3.getY());
     }
+
+    public static int clamp(int x, int start, int end) {
+        if (x < start) {
+            return start;
+        }
+        if (x > end) {
+            return end;
+        }
+        return x;
+    }
 }

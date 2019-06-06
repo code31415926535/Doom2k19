@@ -82,4 +82,8 @@ public class Segment {
         // use margin of error.
         return distanceVA + distanceVB - distanceAB < 0.000001;
     }
+
+    public String toString() {
+        return "[" + a + "-" + b + "]";
+    }
 }

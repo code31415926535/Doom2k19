@@ -8,8 +8,7 @@ import java.util.List;
 
 // TODO: Controls should be smoother
 public class Controls {
-    private static final int DEFAULT_RESPONSIVENESS = 5;
-
+    private static final int DEFAULT_RESPONSIVENESS = 3;
     private int responsiveness;
     private HashMap<Action, Integer> heldKeys;
 
