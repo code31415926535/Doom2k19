@@ -3,10 +3,10 @@ package com.github.code31415926535.game;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 
-public abstract class GameState {
-    protected GameStateManager gsm;
-    protected final int width;
-    protected final int height;
+abstract class GameState {
+    GameStateManager gsm;
+    final int width;
+    final int height;
 
     GameState(GameStateManager parent, int width, int height) {
         gsm = parent;
@@ -20,11 +20,11 @@ public abstract class GameState {
     abstract void update();
     abstract void render(Graphics2D g2d);
 
-    protected void forward(GameState state) {
+    void forward(GameState state) {
         gsm.pushState(state);
     }
 
-    protected void back() {
+    void back() {
         gsm.popState();
     }
 }

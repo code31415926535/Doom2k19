@@ -7,10 +7,10 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.io.FileNotFoundException;
 
-public class PlayState extends GameState {
+class PlayState extends GameState {
     private Engine engine;
 
-    public PlayState(GameStateManager gsm, int w, int h, String map) throws FileNotFoundException, InvalidMapFormatException {
+    PlayState(GameStateManager gsm, int w, int h, String map) throws FileNotFoundException, InvalidMapFormatException {
         super(gsm, w, h);
         this.engine = new Engine(map, w, h);
     }
