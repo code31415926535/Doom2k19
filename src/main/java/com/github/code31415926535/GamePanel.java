@@ -1,6 +1,6 @@
 package com.github.code31415926535;
 
-import com.github.code31415926535.engine.Engine;
+import com.github.code31415926535.game.GameStateManager;
 
 import javax.swing.*;
 import java.awt.*;
@@ -19,8 +19,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
     private BufferedImage buffer;
     private Graphics2D g2d;
 
-    // TODO: Abstraction here for menu and stuff
-    private Engine engine;
+    private GameStateManager gsm;
 
     public GamePanel() {
         this(1280, 960);
@@ -52,8 +51,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
         g2d = (Graphics2D) buffer.getGraphics();
 
         try {
-            // TODO: params here
-            engine = new Engine("corridor.txt", width, height);
+            gsm = new GameStateManager(width, height);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -86,24 +84,24 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
     }
 
     public void keyPressed(KeyEvent e) {
-        engine.keyPressed(e.getKeyCode());
+        gsm.keyPressed(e);
     }
 
     public void keyReleased(KeyEvent e) {
-        engine.keyReleased(e.getKeyCode());
+        gsm.keyReleased(e);
     }
 
     public void keyTyped(KeyEvent e) {}
 
     private void update() {
-        engine.update();
+        gsm.update();
     }
 
     private void render() {
         g2d.setColor(Color.BLACK);
         g2d.fillRect(0, 0, width, height);
 
-        engine.render(g2d);
+        gsm.render(g2d);
     }
 
     private void draw() {

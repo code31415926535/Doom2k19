@@ -34,20 +34,13 @@ public class Map3D extends Map {
 
     private void drawSectors(Graphics2D g2d, int w, int h, Vertex fieldStart, Vertex fieldEnd,
                             SectorRenderDetails start, int[] top, int[] bottom) {
-        HashSet<String> renderedSectors = new HashSet<>();
-
         Queue<SectorRenderDetails> sectorsToRender = new ArrayDeque<>();
         sectorsToRender.add(start);
 
         while (!sectorsToRender.isEmpty()) {
             SectorRenderDetails sectorRenderDetails = sectorsToRender.remove();
-            renderedSectors.add(sectorRenderDetails.getSector().getName());
             ArrayList<SectorRenderDetails> neighbours = drawSector(g2d, w, h, fieldStart, fieldEnd, sectorRenderDetails, top, bottom);
-            for (SectorRenderDetails srd: neighbours) {
-                if (!renderedSectors.contains(srd.getSector().getName())) {
-                    sectorsToRender.add(srd);
-                }
-            }
+            sectorsToRender.addAll(neighbours);
         }
     }
 
